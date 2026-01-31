@@ -3,7 +3,7 @@ import ClickButton from '../components/ClickButton';
 import Leaderboard from '../components/Leaderboard';
 import Auth from '../components/Auth';
 import Navbar from '../components/Navbar';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../supabaseClient';
 import ProfileModal from '../components/ProfileModal';
 
@@ -39,7 +39,7 @@ const Home = () => {
             .on(
                 'postgres_changes',
                 { event: 'UPDATE', schema: 'public', table: 'users' },
-                (payload) => {
+                (_payload) => {
                     // Simple refresh if we see high scores, or just re-fetch periodically
                     // For now, just re-fetching on mount is safe enough or we can add polling
                 }
@@ -116,24 +116,44 @@ const Home = () => {
         }
     };
 
+    const [combo, setCombo] = useState(0);
+    const [lastClickTime, setLastClickTime] = useState(0);
+    const [motivationMsg, setMotivationMsg] = useState(null);
+
     const handleClick = async (e) => {
         if (!session) {
             setShowAuth(true);
             return;
         }
 
+        // Combo Logic
+        const now = Date.now();
+        const timeDiff = now - lastClickTime;
+
+        let newCombo = 1;
+        if (timeDiff < 500) {
+            newCombo = combo + 1;
+        }
+        setCombo(newCombo);
+        setLastClickTime(now);
+
+        // Motivational Messages
+        if (newCombo % 10 === 0 && newCombo > 0) {
+            const msgs = ["GREAT! 🔥", "AMAZING! ⚡", "UNSTOPPABLE! 🚀", "COSMIC! 🌌", "GODLIKE! 👑"];
+            const randomMsg = msgs[Math.floor(Math.random() * msgs.length)];
+            setMotivationMsg({ text: randomMsg, id: now });
+            setTimeout(() => setMotivationMsg(null), 1500);
+        }
+
         // Optimistic update
         setScore(prev => prev + 1);
 
         // Visual effect
-        // const rect = e.target.getBoundingClientRect(); // Unused
         setClickEffect({ x: e.clientX, y: e.clientY, id: Date.now() });
         setTimeout(() => setClickEffect(null), 500);
 
         // DB Update
-        // Using RPC for atomic increment
         const { error } = await supabase.rpc('increment_score');
-
         if (error) console.error(error);
     };
 
@@ -208,6 +228,23 @@ const Home = () => {
                             </span>
                         </motion.div>
                     )}
+
+                    {/* Motivational Popup */}
+                    <AnimatePresence>
+                        {motivationMsg && (
+                            <motion.div
+                                key={motivationMsg.id}
+                                initial={{ scale: 0.5, opacity: 0, y: 50 }}
+                                animate={{ scale: 1.2, opacity: 1, y: 0 }}
+                                exit={{ scale: 1.5, opacity: 0, y: -50 }}
+                                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-40 whitespace-nowrap"
+                            >
+                                <span className="text-4xl md:text-5xl font-black italic tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 drop-shadow-[0_0_30px_rgba(234,179,8,0.8)] font-['Orbitron']">
+                                    {motivationMsg.text}
+                                </span>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
 
                 {!session && (
