@@ -28,7 +28,11 @@ const ProfileModal = ({ isOpen, onClose, session, userProfile, onProfileUpdate }
             if (onProfileUpdate) onProfileUpdate(avatarUrl); // Keeping avatarUrl or maybe we change onProfileUpdate signature later
 
         } catch (error) {
-            setMessage(error.message);
+            if (error.code === '23505') {
+                setMessage('Username already taken. Please choose another.');
+            } else {
+                setMessage(error.message);
+            }
         } finally {
             setUploading(false);
         }

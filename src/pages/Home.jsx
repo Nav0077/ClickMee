@@ -59,6 +59,24 @@ const Home = () => {
                     setUserProfile({ ...data, username: googleName, avatar_url: googleAvatar || data.avatar_url });
                     setScore(data.score || 0);
                     return;
+                } else if (error.code === '23505') {
+                    // Name taken, try appending random number
+                    const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+                    const newName = `${googleName}_${randomSuffix}`;
+
+                    const { error: retryError } = await supabase
+                        .from('users')
+                        .update({
+                            username: newName,
+                            avatar_url: googleAvatar || data.avatar_url
+                        })
+                        .eq('id', userId);
+
+                    if (!retryError) {
+                        setUserProfile({ ...data, username: newName, avatar_url: googleAvatar || data.avatar_url });
+                        setScore(data.score || 0);
+                        return;
+                    }
                 }
             }
 
