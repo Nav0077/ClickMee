@@ -32,13 +32,13 @@ const Navbar = ({ score, session, userProfile, onOpenMenu, onOpenProfile, onOpen
                 </svg>
             </button>
 
-            <div className="flex items-center gap-4 ml-auto pointer-events-auto">
-                {/* Level Badge */}
-                <div className="hidden md:flex flex-col items-end mr-2">
-                    <div className="text-[10px] font-bold text-gray-500 tracking-widest uppercase">{getRankName(level)}</div>
-                    <div className="text-white font-['Orbitron'] font-bold text-sm tracking-wider">LVL {level}</div>
-                    {/* Progress Bar */}
-                    <div className="w-24 h-1 bg-white/10 rounded-full mt-1 overflow-hidden">
+            <div className="flex items-center gap-2 md:gap-4 ml-auto pointer-events-auto">
+                {/* Level Badge - Visible on Mobile now */}
+                <div className="flex flex-col items-end mr-1 md:mr-2">
+                    <div className="text-[8px] md:text-[10px] font-bold text-gray-500 tracking-widest uppercase">{getRankName(level)}</div>
+                    <div className="text-white font-['Orbitron'] font-bold text-xs md:text-sm tracking-wider">LVL {level}</div>
+                    {/* Progress Bar - Hidden on very small mobile */}
+                    <div className="hidden sm:block w-16 md:w-24 h-1 bg-white/10 rounded-full mt-1 overflow-hidden">
                         <div
                             className="h-full bg-white shadow-[0_0_10px_white]"
                             style={{ width: `${progress}%` }}
@@ -46,9 +46,9 @@ const Navbar = ({ score, session, userProfile, onOpenMenu, onOpenProfile, onOpen
                     </div>
                 </div>
 
-                <div className="glass-panel px-4 py-2 rounded-full border border-white/10 text-sm font-medium flex items-center gap-2">
-                    <span className="text-gray-400 uppercase text-xs tracking-wider">Score</span>
-                    <span className="text-white font-['Orbitron'] font-bold text-lg tracking-wide">{currentScore.toLocaleString()}</span>
+                <div className="glass-panel px-3 py-1 md:px-4 md:py-2 rounded-full border border-white/10 text-xs md:text-sm font-medium flex items-center gap-2">
+                    <span className="text-gray-400 uppercase text-[10px] md:text-xs tracking-wider">Score</span>
+                    <span className="text-white font-['Orbitron'] font-bold text-sm md:text-lg tracking-wide">{currentScore.toLocaleString()}</span>
                 </div>
 
                 {session ? (

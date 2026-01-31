@@ -152,10 +152,10 @@ const Home = () => {
                         transition={{ delay: 0.5 }}
                         className="text-center space-y-2 pointer-events-none relative z-20"
                     >
-                        <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.5)] font-['Orbitron']">
+                        <h1 className="text-3xl sm:text-4xl md:text-6xl font-black tracking-tighter text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.5)] font-['Orbitron']">
                             CLICKMEE
                         </h1>
-                        <p className="text-gray-400 font-medium tracking-[0.2em] text-xs md:text-sm uppercase max-w-md mx-auto leading-relaxed">
+                        <p className="text-gray-400 font-medium tracking-[0.15em] md:tracking-[0.2em] text-[10px] sm:text-xs md:text-sm uppercase max-w-xs md:max-w-md mx-auto leading-relaxed px-4">
                             YOU ARE LOOSER, SHOW YOUR TALENT
                         </p>
                     </motion.div>
