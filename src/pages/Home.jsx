@@ -71,6 +71,11 @@ const Home = () => {
     const fetchUserProfile = async (userId) => {
         const { data } = await supabase.from('users').select('*').eq('id', userId).single();
         if (data) {
+            if (data.is_suspended) {
+                setIsCheater(true);
+                // Don't return, let profile load so we show name, but cheater modal covers everything
+            }
+
             // Identity Sync: Check if we have a generic name but better info from metadata
             const { data: { session } } = await supabase.auth.getSession();
 
@@ -128,8 +133,30 @@ const Home = () => {
             return;
         }
 
-        // Combo Logic
+        // 0. Check if already suspended
+        if (isCheater || userProfile?.is_suspended) {
+            return;
+        }
+
+        // 1. Trusted Event Check
+        if (!e.isTrusted) {
+            handleCheatDetection();
+            return;
+        }
+
         const now = Date.now();
+
+        // 2. Speed Check (CPS)
+        // Keep clicks from the last 1000ms
+        const newHistory = [...clickHistory, now].filter(time => now - time < 1000);
+        setClickHistory(newHistory);
+
+        if (newHistory.length > 18) {
+            handleCheatDetection();
+            return;
+        }
+
+        // Combo Logic
         const timeDiff = now - lastClickTime;
 
         let newCombo = 1;
@@ -157,6 +184,16 @@ const Home = () => {
         // DB Update
         const { error } = await supabase.rpc('increment_score');
         if (error) console.error(error);
+    };
+
+    const handleCheatDetection = async () => {
+        setIsCheater(true);
+        if (session?.user?.id) {
+            // Suspend User
+            await supabase.from('users').update({ is_suspended: true }).eq('id', session.user.id);
+            // Trigger Email Notification (simulated here, would require Edge Function for actual mail)
+            console.error("CHEAT DETECTED. Emailing details to basnetnavraj4@gmail.com...");
+        }
     };
 
     return (
@@ -295,9 +332,16 @@ const Home = () => {
                                 <p className="text-white text-xl font-bold font-mono leading-relaxed uppercase border-2 border-red-500/50 p-4 rounded bg-red-500/10">
                                     &quot;yOU ARE USING A UNKNOWN EXTENSION TO AUTO CILICK AND YOU ARE A BIG GAY!!!!!&quot;
                                 </p>
-                                <p className="text-red-400 mt-6 text-sm">
-                                    Refresh the page to stop being fake.
-                                </p>
+                                <div className="mt-8 bg-red-900/50 p-4 rounded-xl border border-red-500/30">
+                                    <h3 className="text-red-400 font-bold mb-2 uppercase text-sm tracking-wider">Account Suspended</h3>
+                                    <p className="text-white text-xs font-mono">
+                                        Details have been sent to admin.
+                                        <br />
+                                        <span className="block mt-2 font-bold text-yellow-400">
+                                            Contact basnetnavraj4@gmail.com to unsuspend.
+                                        </span>
+                                    </p>
+                                </div>
                             </motion.div>
                         </motion.div>
                     )}
