@@ -15,7 +15,7 @@ const ClickButton = ({ onClick, disabled }) => {
                 onClick={onClick}
                 disabled={disabled}
                 className="
-                    relative w-64 h-64 rounded-full 
+                    relative w-48 h-48 sm:w-56 sm:h-56 rounded-full 
                     bg-[#0a0a0c]
                     shadow-[0_0_50px_rgba(59,130,246,0.2)]
                     text-white
@@ -33,10 +33,10 @@ const ClickButton = ({ onClick, disabled }) => {
 
                 {/* Inner Glow Info */}
                 <div className="relative z-20 flex flex-col items-center">
-                    <span className="text-5xl font-black tracking-widest bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 drop-shadow-lg group-hover:from-white group-hover:to-blue-200 transition-all duration-300">
+                    <span className="text-3xl sm:text-4xl font-black tracking-widest bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 drop-shadow-lg group-hover:from-white group-hover:to-blue-200 transition-all duration-300 font-['Orbitron']">
                         CLICK
                     </span>
-                    <span className="text-xs text-blue-300/60 font-mono tracking-[0.5em] mt-2 group-hover:text-blue-200/80">
+                    <span className="text-[10px] text-blue-300/60 font-mono tracking-[0.4em] mt-1 group-hover:text-blue-200/80">
                         INITIATE
                     </span>
                 </div>

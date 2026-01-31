@@ -7,17 +7,45 @@ import { motion } from 'framer-motion';
 import { supabase } from '../supabaseClient';
 import ProfileModal from '../components/ProfileModal';
 
+import TopPlayerSpotlight from '../components/TopPlayerSpotlight';
+
 const Home = () => {
     const [score, setScore] = useState(0);
     const [clickEffect, setClickEffect] = useState(false);
     const [session, setSession] = useState(null);
     const [userProfile, setUserProfile] = useState(null);
+    const [topUser, setTopUser] = useState(null);
 
     const [showAuth, setShowAuth] = useState(false);
     const [showProfile, setShowProfile] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     useEffect(() => {
+        // Fetch Top #1 Player
+        const fetchTopPlayer = async () => {
+            const { data } = await supabase
+                .from('users')
+                .select('username, score, avatar_url')
+                .order('score', { ascending: false })
+                .limit(1)
+                .single();
+            if (data) setTopUser(data);
+        };
+        fetchTopPlayer();
+
+        // Subscribe to changes for realtime updates on the spotlight (optional, but nice)
+        const channel = supabase
+            .channel('top-player-changes')
+            .on(
+                'postgres_changes',
+                { event: 'UPDATE', schema: 'public', table: 'users' },
+                (payload) => {
+                    // Simple refresh if we see high scores, or just re-fetch periodically
+                    // For now, just re-fetching on mount is safe enough or we can add polling
+                }
+            )
+            .subscribe();
+
         supabase.auth.getSession().then(({ data: { session } }) => {
             setSession(session);
             if (session) fetchUserProfile(session.user.id);
@@ -34,7 +62,10 @@ const Home = () => {
             }
         });
 
-        return () => subscription.unsubscribe();
+        return () => {
+            subscription.unsubscribe();
+            supabase.removeChannel(channel);
+        };
     }, []);
 
     const fetchUserProfile = async (userId) => {
@@ -159,6 +190,9 @@ const Home = () => {
                             YOU ARE LOOSER, SHOW YOUR TALENT
                         </p>
                     </motion.div>
+
+                    {/* Spotlight for #1 Player */}
+                    <TopPlayerSpotlight topUser={topUser} />
 
                     <ClickButton onClick={handleClick} disabled={false} />
 
