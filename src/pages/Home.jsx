@@ -152,10 +152,10 @@ const Home = () => {
                         transition={{ delay: 0.5 }}
                         className="text-center space-y-2 pointer-events-none relative z-20"
                     >
-                        <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-white to-purple-400 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+                        <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.5)] font-['Orbitron']">
                             CLICKMEE
                         </h1>
-                        <p className="text-blue-200/60 font-medium tracking-widest text-xs md:text-sm uppercase max-w-md mx-auto leading-relaxed">
+                        <p className="text-gray-400 font-medium tracking-[0.2em] text-xs md:text-sm uppercase max-w-md mx-auto leading-relaxed">
                             YOU ARE LOOSER, SHOW YOUR TALENT
                         </p>
                     </motion.div>
@@ -169,7 +169,7 @@ const Home = () => {
                             animate={{ scale: 2, opacity: 0, y: -200 }}
                             className="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none z-30 flex flex-col items-center"
                         >
-                            <span className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-blue-400 drop-shadow-[0_0_20px_rgba(255,255,255,0.8)]">
+                            <span className="text-6xl font-black text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.8)] font-['Orbitron']">
                                 +1
                             </span>
                         </motion.div>
