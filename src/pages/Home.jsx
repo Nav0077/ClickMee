@@ -39,7 +39,7 @@ const Home = () => {
             .on(
                 'postgres_changes',
                 { event: 'UPDATE', schema: 'public', table: 'users' },
-                (_payload) => {
+                () => {
                     // Simple refresh if we see high scores, or just re-fetch periodically
                     // For now, just re-fetching on mount is safe enough or we can add polling
                 }
@@ -119,6 +119,8 @@ const Home = () => {
     const [combo, setCombo] = useState(0);
     const [lastClickTime, setLastClickTime] = useState(0);
     const [motivationMsg, setMotivationMsg] = useState(null);
+    const [clickHistory, setClickHistory] = useState([]);
+    const [isCheater, setIsCheater] = useState(false);
 
     const handleClick = async (e) => {
         if (!session) {
@@ -272,6 +274,34 @@ const Home = () => {
                     userProfile={userProfile}
                     onProfileUpdate={(newUrl) => setUserProfile({ ...userProfile, avatar_url: newUrl })}
                 />
+
+                {/* CHEAT DETECTION MODAL */}
+                <AnimatePresence>
+                    {isCheater && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="fixed inset-0 z-[100] bg-red-900/90 backdrop-blur-md flex items-center justify-center p-4 cursor-not-allowed"
+                        >
+                            <motion.div
+                                initial={{ scale: 0.8, rotate: -5 }}
+                                animate={{ scale: 1, rotate: 0 }}
+                                className="bg-black border-4 border-red-600 p-8 rounded-3xl max-w-lg text-center shadow-[0_0_100px_rgba(220,38,38,0.8)]"
+                            >
+                                <div className="text-6xl mb-4">🤬</div>
+                                <h2 className="text-4xl font-black text-red-500 mb-4 font-['Orbitron'] tracking-widest uppercase">
+                                    CHEAT DETECTED!
+                                </h2>
+                                <p className="text-white text-xl font-bold font-mono leading-relaxed uppercase border-2 border-red-500/50 p-4 rounded bg-red-500/10">
+                                    &quot;yOU ARE USING A UNKNOWN EXTENSION TO AUTO CILICK AND YOU ARE A BIG GAY!!!!!&quot;
+                                </p>
+                                <p className="text-red-400 mt-6 text-sm">
+                                    Refresh the page to stop being fake.
+                                </p>
+                            </motion.div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </main>
         </div>
     );
