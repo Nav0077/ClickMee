@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://click-mee-snowy.vercel.app/sitemap.xml
+Sitemap: https://clickmeex.vercel.app/sitemap.xml
