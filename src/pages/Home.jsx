@@ -33,15 +33,14 @@ const Home = () => {
         };
         fetchTopPlayer();
 
-        // Subscribe to changes for realtime updates on the spotlight (optional, but nice)
+        // Subscribe to changes for realtime updates on the spotlight
         const channel = supabase
             .channel('top-player-changes')
             .on(
                 'postgres_changes',
                 { event: 'UPDATE', schema: 'public', table: 'users' },
                 () => {
-                    // Simple refresh if we see high scores, or just re-fetch periodically
-                    // For now, just re-fetching on mount is safe enough or we can add polling
+                    fetchTopPlayer();
                 }
             )
             .subscribe();

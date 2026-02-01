@@ -12,6 +12,23 @@ const LeaderboardFull = () => {
 
     useEffect(() => {
         fetchUsers(0);
+
+        const channel = supabase
+            .channel('leaderboard-full-updates')
+            .on(
+                'postgres_changes',
+                { event: '*', schema: 'public', table: 'users' },
+                () => {
+                    // Refetch the first page to keep it updated. 
+                    // For a global leaderboard, this is usually enough for responsiveness.
+                    fetchUsers(0);
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
     }, []);
 
     const fetchUsers = async (pageIndex) => {
@@ -25,10 +42,14 @@ const LeaderboardFull = () => {
             .range(from, to);
 
         if (data) {
-            if (pageIndex === 0) setUsers(data);
-            else setUsers(prev => [...prev, ...data]);
-
-            if (data.length < PAGE_SIZE) setHasMore(false);
+            if (pageIndex === 0) {
+                setUsers(data);
+                setPage(0);
+                setHasMore(data.length === PAGE_SIZE);
+            } else {
+                setUsers(prev => [...prev, ...data]);
+                if (data.length < PAGE_SIZE) setHasMore(false);
+            }
         }
     };
 
